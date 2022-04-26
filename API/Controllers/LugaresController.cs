@@ -10,6 +10,7 @@ using Core.Interfaces;
 using Core.Especificaciones;
 using AutoMapper;
 using API.Dtos;
+using API.Errores;
 
 namespace API.Controllers
 {
@@ -44,10 +45,16 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LugarDto>> GetLugar(int id)
         {
             var espec = new LugaresConPaisCategoriaEspecificacion(id);
             var lugar = await _lugarRepo.ObtenerEspec(espec);
+
+            if (lugar == null) return NotFound(new ApiResponse(404));
+
             return _mapper.Map<Lugar, LugarDto>(lugar);
         }
 
